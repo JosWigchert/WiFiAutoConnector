@@ -23,17 +23,17 @@ namespace WiFiAutoConnector
         public delegate void StatusChangeEvent();
         public event StatusChangeEvent OnStatusChange;
 
-        private Timer _scanNetworksTimer = null;
+        private Timer _scanNetworksTimer;
         private string _autoconnectTo;
         private bool _autoconnect = false;
 
-        private async void _scanNetworksTimer_Tick(object? sender, EventArgs e)
+        private async void _scanNetworksTimer_Tick(object? sender, EventArgs? e)
         {
             await NativeWifi.ScanNetworksAsync(timeout: TimeSpan.FromSeconds(10));
 
-            if (_autoconnect && _autoconnectTo != null) 
+            if (_autoconnect && !string.IsNullOrEmpty(_autoconnectTo)) 
             {
-                if (!IsConnected || _autoconnectTo != ConnectedNetworkIdentifier.ToString())
+                if (!IsConnected || _autoconnectTo != ConnectedNetworkIdentifier?.ToString())
                 {
                     await Connect(_autoconnectTo);
                 }
@@ -51,14 +51,14 @@ namespace WiFiAutoConnector
 
         public DeviceStatus Status { get; private set; }
         public bool IsConnected { get => NativeWifi.EnumerateConnectedNetworkSsids().Count() > 0; }
-        public NetworkIdentifier ConnectedNetworkIdentifier { get => NativeWifi.EnumerateConnectedNetworkSsids().FirstOrDefault(); }
-        public AvailableNetworkPack ConnectedNetwork { get => NativeWifi.EnumerateAvailableNetworks().Where((x) => x.Ssid == ConnectedNetworkIdentifier).FirstOrDefault(); }
+        public NetworkIdentifier? ConnectedNetworkIdentifier { get => NativeWifi.EnumerateConnectedNetworkSsids().FirstOrDefault(); }
+        public AvailableNetworkPack? ConnectedNetwork { get => NativeWifi.EnumerateAvailableNetworks().Where((x) => x.Ssid == ConnectedNetworkIdentifier).FirstOrDefault(); }
 
         public async Task<bool> Connect(string ssid)
         {
             NativeWifi.EnumerateAvailableNetworks();
 
-            AvailableNetworkPack network = GetAvailableNetworks().Where(x => x.Ssid.ToString() == ssid).FirstOrDefault();
+            AvailableNetworkPack? network = GetAvailableNetworks()?.Where(x => x.Ssid.ToString() == ssid)?.FirstOrDefault();
             bool success = false;
 
             if (network != null)
@@ -94,7 +94,7 @@ namespace WiFiAutoConnector
         public void StopAutoConnect()
         {
             _autoconnect = false;
-            _autoconnectTo = null;
+            _autoconnectTo = string.Empty;
         }
 
         public void Initialise()

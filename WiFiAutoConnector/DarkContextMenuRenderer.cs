@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,55 +9,32 @@ namespace WiFiAutoConnector
 {
     public class DarkContextMenuRenderer : ToolStripProfessionalRenderer
     {
-        private readonly Color DarkBackgroundColor = Color.FromArgb(31, 31, 31);
-        private readonly Color DarkBorderColor = Color.FromArgb(0, 0, 0);
+        public DarkContextMenuRenderer()
+            : base(new ColorTable())
+        {
+            
+        }
 
         protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
         {
-            e.ArrowColor = e.Item.Enabled ? Color.White : Color.Gray;
-            base.OnRenderArrow(e);
-        }
-
-        protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
-        {
-            Rectangle rectangle = new Rectangle(Point.Empty, e.Item.Size);
-            e.Graphics.FillRectangle(new SolidBrush(DarkBackgroundColor), rectangle);
-            e.Graphics.DrawRectangle(new Pen(DarkBorderColor), rectangle.X, rectangle.Y, rectangle.Width - 1, rectangle.Height - 1);
-        }
-
-        protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
-        {
-            OnRenderButtonBackground(e);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            var r = new Rectangle(e.ArrowRectangle.Location, e.ArrowRectangle.Size);
+            r.Inflate(-2, -6);
+            e.Graphics.DrawLines(Pens.Black, new Point[]{
+        new Point(r.Left, r.Top),
+        new Point(r.Right, r.Top + r.Height /2),
+        new Point(r.Left, r.Top+ r.Height)});
         }
 
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
         {
-            e.Graphics.FillRectangle(new SolidBrush(DarkBackgroundColor), e.ImageRectangle);
-            base.OnRenderItemCheck(e);
-        }
-
-        protected override void OnRenderItemBackground(ToolStripItemRenderEventArgs e)
-        {
-            Rectangle rectangle = new Rectangle(Point.Empty, e.Item.Size);
-            e.Graphics.FillRectangle(new SolidBrush(DarkBackgroundColor), rectangle);
-            e.Graphics.DrawRectangle(new Pen(DarkBorderColor), rectangle.X, rectangle.Y, rectangle.Width - 1, rectangle.Height - 1);
-        }
-
-        protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
-        {
-            e.Graphics.FillRectangle(new SolidBrush(DarkBackgroundColor), e.ImageRectangle);
-            base.OnRenderItemImage(e);
-        }
-
-        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
-        {
-            e.TextColor = e.Item.Enabled ? Color.White : Color.Gray;
-            base.OnRenderItemText(e);
-        }
-
-        protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
-        {
-            e.Graphics.FillRectangle(new SolidBrush(DarkBorderColor), e.Item.ContentRectangle.X + 30, e.Item.ContentRectangle.Y + 2, e.Item.ContentRectangle.Width - 30, 1);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            var r = new Rectangle(e.ImageRectangle.Location, e.ImageRectangle.Size);
+            r.Inflate(-4, -6);
+            e.Graphics.DrawLines(Pens.Black, new Point[]{
+        new Point(r.Left, r.Bottom - r.Height /2),
+        new Point(r.Left + r.Width /3,  r.Bottom),
+        new Point(r.Right, r.Top)});
         }
     }
 }

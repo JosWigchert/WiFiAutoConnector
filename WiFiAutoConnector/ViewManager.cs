@@ -14,7 +14,7 @@ namespace WiFiAutoConnector
             _components = new System.ComponentModel.Container();
             _notifyIcon = new System.Windows.Forms.NotifyIcon(_components)
             {
-                ContextMenuStrip = new ContextMenuStrip() { Renderer = new ToolStripProfessionalRenderer(), },
+                ContextMenuStrip = new ContextMenuStrip() { Renderer = new DarkContextMenuRenderer(), },
                 Icon = Properties.Resources.WiFi,
                 Text = "WiFi Auto Connector",
                 Visible = true,
@@ -25,7 +25,7 @@ namespace WiFiAutoConnector
 
             _connectedNetworkMenuItem = new ToolStripMenuItem("No Network");
             _wifiNetworksMenuItem = new ToolStripMenuItem("WiFi Networks");
-            _autoconnectButton = new ToolStripButton("Autoconnect", null, _autoconnectButton_Click)
+            _autoconnectButton = new ToolStripMenuItem("Autoconnect", null, _autoconnectButton_Click)
             {
                 CheckOnClick = true,
                 Checked = Settings.Instance.IsAutoconnect,
@@ -47,7 +47,7 @@ namespace WiFiAutoConnector
 
         private ToolStripMenuItem _connectedNetworkMenuItem;
         private ToolStripMenuItem _wifiNetworksMenuItem;
-        private ToolStripButton _autoconnectButton;
+        private ToolStripMenuItem _autoconnectButton;
         private ToolStripMenuItem _exitMenuItem;
 
         private void DisplayStatusMessage(string text)
@@ -95,17 +95,17 @@ namespace WiFiAutoConnector
             DisplayStatusMessage($"Connecting to {ssid}");
         }
 
-        private void _showWebSite_Click(object sender, EventArgs e)
+        private void _showWebSite_Click(object? sender, EventArgs e)
         {
             Process.Start(new ProcessStartInfo() { FileName = "https://github.com/JosWigchert/WiFiAutoConnector", UseShellExecute = true, });
         }
 
-        private void _exitItem_Click(object sender, EventArgs e)
+        private void _exitItem_Click(object? sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        private void _autoconnectButton_Click(object sender, EventArgs e)
+        private void _autoconnectButton_Click(object? sender, EventArgs e)
         {
             if (_deviceManager.IsConnected)
             {
@@ -114,20 +114,21 @@ namespace WiFiAutoConnector
             }
         }
 
-        private void _notifyIcon_MouseUp(object sender, MouseEventArgs e)
+        private void _notifyIcon_MouseUp(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                MethodInfo mi = typeof(NotifyIcon).GetMethod("ShowContextMenu", BindingFlags.Instance | BindingFlags.NonPublic);
-                mi.Invoke(_notifyIcon, null);
+                Type type = typeof(NotifyIcon);
+                MethodInfo? mi = type.GetMethod("ShowContextMenu", BindingFlags.Instance | BindingFlags.NonPublic);
+                mi?.Invoke(_notifyIcon, null);
             }
         }
 
-        private void _ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void _ContextMenuStrip_Opening(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = false;
 
-            if (_notifyIcon.ContextMenuStrip.Items.Count == 0)
+            if (_notifyIcon?.ContextMenuStrip?.Items.Count == 0)
             {
                 _notifyIcon.ContextMenuStrip.Items.Add(_connectedNetworkMenuItem);
                 _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());

@@ -33,8 +33,6 @@ namespace WiFiAutoConnector
             {
                 _deviceManager.Terminate();
             }
-            _deviceManager = null;
-            _viewManager = null;
         }
     }
 }

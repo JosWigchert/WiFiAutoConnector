@@ -47,11 +47,8 @@ namespace WiFiAutoConnector
             set { _target = value; OnPropertyChanged(nameof(Target)); }
         }
 
-
-
-
         // Event to notify property changes
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -85,7 +82,7 @@ namespace WiFiAutoConnector
                 if (File.Exists(filePath))
                 {
                     string json = File.ReadAllText(filePath);
-                    return JsonConvert.DeserializeObject<Settings>(json);
+                    return JsonConvert.DeserializeObject<Settings>(json) ?? new Settings();
                 }
             }
             catch (Exception ex)
